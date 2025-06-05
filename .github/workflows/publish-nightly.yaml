@@ -96,5 +96,5 @@ jobs:
           asset_path: ./dist/vscode-extension-nightly.zip
           asset_name: vscode-extension-nightly-$$.zip
           asset_content_type: application/zip
-          max_releases: 7
+          max_releases: 14
           ignore_hash: true
