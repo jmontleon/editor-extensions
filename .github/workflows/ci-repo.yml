@@ -184,7 +184,8 @@ jobs:
           path: "dist/*.vsix"
 
 
-      - name: zip vsix
+      - name: move vsix
+        if: ${{ ! (github.event_name == 'pull_request' && ! github.event.pull_request.merged) }}
         run: |
           cd ./dist
           mv *.vsix konveyor-ai.vsix
