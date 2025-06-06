@@ -17,6 +17,9 @@ on:
 
   workflow_call:
 
+  schedule:
+    - cron: '0 2 * * *'
+
 concurrency:
   group: ci-repo-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
@@ -173,8 +176,19 @@ jobs:
           npm run dist
           npm run package
 
-      - name: Upload VSIX artifact
-        uses: actions/upload-artifact@v4
+      - name: zip vsix
+        run: |
+          cd ./dist
+          mv *.vsix konveyor-ai.vsix
+          cd ..
+
+      - name: Deploy release
+        uses: WebFreak001/deploy-nightly@v3.2.0
         with:
-          name: vscode-extension
-          path: "dist/*.vsix"
+          upload_url: https://uploads.github.com/repos/jmontleon/editor-extensions/releases/223191864/assets{?name,label}
+          release_id: 223191864
+          asset_path: ./dist/konveyor-ai.vsix
+          asset_name: konveyor-ai-$$.vsix
+          asset_content_type: application/octet-stream
+          max_releases: 14
+          ignore_hash: true
