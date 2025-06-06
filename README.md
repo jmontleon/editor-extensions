@@ -1,3 +1,4 @@
+Just checking if a PR triggers does the right thing"
 # Konveyor Editor Extensions
 
 ## Build and Test Status
