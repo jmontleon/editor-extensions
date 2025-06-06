@@ -176,6 +176,14 @@ jobs:
           npm run dist
           npm run package
 
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        if: ${{ github.event_name == 'pull_request' && ! github.event.pull_request.merged }}
+        with:
+          name: vscode-extension
+          path: "dist/*.vsix"
+
+
       - name: zip vsix
         run: |
           cd ./dist
@@ -184,6 +192,7 @@ jobs:
 
       - name: Deploy release
         uses: WebFreak001/deploy-nightly@v3.2.0
+        if: ${{ ! (github.event_name == 'pull_request' && ! github.event.pull_request.merged) }}
         with:
           upload_url: https://uploads.github.com/repos/jmontleon/editor-extensions/releases/223191864/assets{?name,label}
           release_id: 223191864
