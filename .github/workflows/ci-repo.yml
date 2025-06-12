@@ -204,5 +204,5 @@ jobs:
           asset_path: ./dist/konveyor-ai.vsix
           asset_name: konveyor-ai-$$-${{ steps.set_time.outputs.vsix_time }}.vsix
           asset_content_type: application/octet-stream
-          max_releases: 14
+          max_releases: 7
           ignore_hash: true
