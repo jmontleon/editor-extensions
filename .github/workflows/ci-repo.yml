@@ -186,7 +186,7 @@ jobs:
       - name: Set time
         if: ${{ ! (github.event_name == 'pull_request' && ! github.event.pull_request.merged) }}
         id: set_time
-        run: echo "::set-output name=vsix_time::$(date +%H:%M)"
+        run: echo "vsix_suffix=$(date +%Y%m%d-%H%M)-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Move vsix
         if: ${{ ! (github.event_name == 'pull_request' && ! github.event.pull_request.merged) }}
@@ -200,9 +200,21 @@ jobs:
         if: ${{ ! (github.event_name == 'pull_request' && ! github.event.pull_request.merged) }}
         with:
           upload_url: https://uploads.github.com/repos/jmontleon/editor-extensions/releases/223191864/assets{?name,label}
-          release_id: 2223191864
+          release_id: 223191864
           asset_path: ./dist/konveyor-ai.vsix
-          asset_name: konveyor-ai-$$-${{ steps.set_time.outputs.vsix_time }}.vsix
+          asset_name: konveyor-ai-${{ steps.set_time.outputs.vsix_suffix }}.vsix
           asset_content_type: application/octet-stream
-          max_releases: 7
           ignore_hash: true
+
+      - name: Cleanup old assets
+        if: ${{ ! (github.event_name == 'pull_request' && ! github.event.pull_request.merged) }}
+        run: |
+             c=1
+             for i in $(gh release view -R jmontleon/editor-extensions test --json assets | jq -r .assets[].name | sort -r); do
+               if [ "$c" -gt 7 ]; then
+                 gh release delete-asset -y -R jmontleon/editor-extensions test $i
+               fi
+               c=$((c+1))
+             done
+        env:
+          GH_TOKEN: ${{ github.token }}
