@@ -18,7 +18,7 @@ on:
   workflow_call:
 
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '35 5 * * *'
 
 concurrency:
   group: ci-repo-${{ github.event_name }}-${{ github.ref }}
@@ -183,6 +183,10 @@ jobs:
           name: vscode-extension
           path: "dist/*.vsix"
 
+      - name: Set time
+        if: ${{ ! (github.event_name == 'pull_request' && ! github.event.pull_request.merged) }}
+        id: set_time
+        run: echo "::set-output name=vsix_time::$(date +%H:%M)"
 
       - name: Move vsix
         if: ${{ ! (github.event_name == 'pull_request' && ! github.event.pull_request.merged) }}
@@ -198,7 +202,7 @@ jobs:
           upload_url: https://uploads.github.com/repos/konveyor/editor-extensions/releases/223723085/assets{?name,label}
           release_id: 223723085
           asset_path: ./dist/konveyor-ai.vsix
-          asset_name: konveyor-ai-$$.vsix
+          asset_name: konveyor-ai-$$-${{ steps.set_time.outputs.vsix_time }}.vsix
           asset_content_type: application/octet-stream
           max_releases: 14
           ignore_hash: true
